@@ -7,8 +7,8 @@ import "./style.scss";
 function Register() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState({
+    name: "",
     email: "",
-    otp: "",
     password: "",
     confirmPassword: "",
     securityQuestion: "",
@@ -24,48 +24,13 @@ function Register() {
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const verifyEmail = async () => {
-    if (!data.email) {
-      alert("Please enter your email");
-      return;
-    }
-    if (!isValidEmail(data.email)) {
-      alert("Please enter a valid email");
-      return;
-    }
-
-    try {
-      const res = await axios.post(BACKEND_SERVER_URL + "/signup/sendOtp", {
-        email: data.email,
-      });
-      if (res.status === 200) {
-        alert("OTP sent successfully");
-        setStep(2);
-      }
-    } catch (error) {
-      const msg =
-        error.response?.status === 409
-          ? "Email already exists. Please login or reset your password."
-          : "Failed to send OTP. Please try again.";
-      alert(msg);
-      console.error("Error sending OTP:", error.response?.data || error.message);
-    }
+    // No OTP step; proceed to final form
+    setStep(3);
   };
 
   const verifyOtp = async () => {
-    try {
-      const res = await axios.post(BACKEND_SERVER_URL + "/signup/checkUser", {
-        email: data.email,
-        otp: parseInt(data.otp, 10),
-      });
-      if (res.status === 200) {
-        setStep(3);
-      } else {
-        alert("Incorrect OTP");
-      }
-    } catch (error) {
-      alert("OTP verification failed.");
-      console.error("OTP verify error:", error.response?.data || error.message);
-    }
+    // OTP removed
+    setStep(3);
   };
 
   const submit = async (e) => {
@@ -89,6 +54,7 @@ function Register() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name: data.name,
           email: data.email,
           password: data.password,
           securityQuestion: data.securityQuestion,
@@ -126,24 +92,25 @@ function Register() {
         <form onSubmit={submit}>
           {step === 1 && (
             <>
-              <div className="formGroup">
-                <label>Email</label>
-                <input type="email" name="email" value={data.email} onChange={handleChange} />
-              </div>
-              <button type="button" onClick={verifyEmail} className="button">
-                Send OTP
-              </button>
+                    <div className="formGroup">
+                      <label>Name</label>
+                      <input type="text" name="name" value={data.name} onChange={handleChange} />
+                    </div>
+                    <div className="formGroup">
+                      <label>Email</label>
+                      <input type="email" name="email" value={data.email} onChange={handleChange} />
+                    </div>
+                    <button type="button" onClick={verifyEmail} className="button">
+                      Continue
+                    </button>
             </>
           )}
 
           {step === 2 && (
             <>
-              <div className="formGroup">
-                <label>OTP</label>
-                <input type="number" name="otp" value={data.otp} onChange={handleChange} />
-              </div>
-              <button type="button" onClick={verifyOtp} className="button">
-                Verify OTP
+              {/* kept for compatibility; will proceed to final step */}
+              <button type="button" onClick={() => setStep(3)} className="button">
+                Continue
               </button>
               <button type="button" onClick={() => setStep(1)} className="button secondary">
                 Back

@@ -23,13 +23,14 @@ const ChangePassword = () => {
       alert("Password and Confirm Password must be same");
       return;
     }
+    // This flow uses security question -> call forgotPass
     const changePassword = {
       email: data.email,
-      password: data.password,
       securityQuestion: data.securityQuestion,
       securityQuestionAnswer: data.securityQuestionAnswer,
+      newPassword: data.password,
     };
-    const res = await fetch(BACKEND_SERVER_URL + "/signup/changePass", {
+    const res = await fetch(BACKEND_SERVER_URL + "/signup/forgotPass", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(changePassword),
